@@ -1,0 +1,3 @@
+backend/.anv
+backend/node_modules/
+*.log
