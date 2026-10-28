@@ -10,6 +10,7 @@ export const register=async(req,res)=>{
         const {email,password}=req.body;
     if(!email || !password) 
         return res.json({message:"write email and password"});
+
     const existingUser=await User.findOne({email});
     if(existingUser) return res.json({message:"User already exists"})
     const hashedPass=await bcrypt.hash(password,10);
@@ -26,6 +27,8 @@ export const register=async(req,res)=>{
     }
 
 }
+
+
 export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -33,7 +36,7 @@ export const login = async (req, res) => {
         if (!email || !password) {
             return res
                 .status(400)
-                .json({ message: "Email and password are required" });
+                .json({ message: "Email and password are required"});
         }
 
         const user = await User.findOne({ email });
@@ -54,9 +57,11 @@ export const login = async (req, res) => {
 
         //get current user-agent
         const userAgent=req.headers["user-agent"];
+
         const existingSessions=await RefreshToken.find({
             user:user._id,
         })
+        console.log("existing sessions ",existingSessions);
         const existingSession=existingSessions.find(
             session=>session.userAgent===userAgent
         )
@@ -101,7 +106,7 @@ export const login = async (req, res) => {
             httpOnly:true,
             secure:false,
             sameSite:"lax",
-            maxAge:7*24*60*60*1000,
+            maxAge:7*60*1000,
         })
 
         return res.status(200).json({
@@ -198,7 +203,7 @@ const user = await User.findById(req.user.userId);
         });
     }
 
-    const userAgent = req.headers["user-agent"] || "Unknown";
+    const userAgent = req.headers["user-agent"] || "Unknown";  //device 2
 
     const updatedUser = await User.findByIdAndUpdate(
         user._id,
